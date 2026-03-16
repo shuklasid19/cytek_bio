@@ -18,3 +18,42 @@ resources:
           # We include every dependency defined by pyproject.toml by defining an editable environment
           # that points to the folder where pyproject.toml is deployed.
           - --editable ${workspace.file_path}
+resources:
+  pipelines:
+    cytek_bio_project_etl:
+      name: "[${bundle.target}] Cytek Bio ETL Pipeline"
+      catalog: ${var.catalog}
+      target:  ${var.schema}
+      development: ${bundle.target == 'dev'}
+      continuous: false
+
+      # 🏷️ DLT PIPELINE COST TAGS — shows in Delta Live Tables → Settings
+      configuration:
+        project:     cytek_bio_project
+        team:        data-engineering
+        env:         ${bundle.target}
+        pipeline:    cytek-bio-etl
+        cost_center: ${var.cost_center}
+        owner:       ${var.owner}
+        resource:    dlt-pipeline
+
+      libraries:
+        - notebook:
+            path: ../src/your_dlt_notebook.py
+
+      clusters:
+        - label: default
+          num_workers: 2
+          aws_attributes:
+            availability: SPOT_WITH_FALLBACK
+            spot_bid_price_percent: 80
+
+          # 🏷️ DLT CLUSTER COST TAGS — shows in Compute UI
+          custom_tags:
+            project:     cytek_bio_project
+            team:        data-engineering
+            env:         ${bundle.target}
+            pipeline:    cytek-bio-etl
+            cost_center: ${var.cost_center}
+            owner:       ${var.owner}
+            resource:    dlt-cluster

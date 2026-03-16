@@ -52,3 +52,45 @@ resources:
               # See https://docs.databricks.com/dev-tools/bundles/library-dependencies.html
               # for more information on how to add other libraries.
               - ../dist/*.whl
+              - resources:
+  jobs:
+    sample_job:
+      name: "[${bundle.target}] Sample Job"
+
+      # 🏷️ JOB COST TAGS — adds to Workflows UI → Tags tab
+      tags:
+        project:     cytek_bio_project
+        team:        data-engineering
+        env:         ${bundle.target}
+        cost_center: ${var.cost_center}
+        owner:       ${var.owner}
+        resource:    job
+
+      tasks:
+        - task_key: main_task
+          job_cluster_key: job_cluster
+          notebook_task:
+            notebook_path: ../src/your_notebook.py
+            base_parameters:
+              catalog: ${var.catalog}
+              schema:  ${var.schema}
+              env:     ${bundle.target}
+
+      job_clusters:
+        - job_cluster_key: job_cluster
+          new_cluster:
+            spark_version: 15.4.x-scala2.12
+            node_type_id:  i3.xlarge
+            num_workers: 2
+            aws_attributes:
+              availability: SPOT_WITH_FALLBACK
+              spot_bid_price_percent: 80
+
+            # 🏷️ CLUSTER COST TAGS — shows in Compute UI → Tags tab
+            custom_tags:
+              project:     cytek_bio_project
+              team:        data-engineering
+              env:         ${bundle.target}
+              cost_center: ${var.cost_center}
+              owner:       ${var.owner}
+              resource:    cluster

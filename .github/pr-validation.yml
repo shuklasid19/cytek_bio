@@ -1,14 +1,14 @@
-name: Deploy to DEV
+name: PR Validation
 
 on:
-  push:
+  pull_request:
     branches:
-      - dev        # ✅ Only dev branch, NOT feature/**
+      - dev     # triggers when PR raised to dev
+      - main    # triggers when PR raised to main
 
 jobs:
-  deploy:
+  validate:
     runs-on: ubuntu-latest
-    environment: development
 
     steps:
       - name: Checkout code
@@ -19,12 +19,6 @@ jobs:
 
       - name: Validate Bundle
         run: databricks bundle validate --target dev
-        env:
-          DATABRICKS_HOST:  ${{ secrets.DATABRICKS_HOST_DEV }}
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN_DEV }}
-
-      - name: Deploy Bundle to DEV
-        run: databricks bundle deploy --target dev
         env:
           DATABRICKS_HOST:  ${{ secrets.DATABRICKS_HOST_DEV }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN_DEV }}
