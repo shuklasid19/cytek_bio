@@ -3,7 +3,7 @@ name: Deploy to DEV
 on:
   push:
     branches:
-      - dev        # ✅ Only dev branch, NOT feature/**
+      - dev
 
 jobs:
   deploy:

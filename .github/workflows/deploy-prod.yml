@@ -3,12 +3,12 @@ name: Deploy to PROD
 on:
   push:
     branches:
-      - main       # ✅ Only main branch
+      - main    # triggers only when dev merges into main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: production   # requires manual approval
+    environment: production   # requires manual approval in GitHub
 
     steps:
       - name: Checkout code
